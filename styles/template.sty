@@ -1,0 +1,41 @@
+% This file contains the core required packages in LaTeX which 
+% can be used in various document class z.B. article, report,
+% CV and motivation letters
+\ProvidesPackage{template}
+
+\usepackage[fntef,heading,fontset=fandol]{ctex} % Chinese support with portable fonts
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{setspace} % Required for the space setting
+\usepackage{titlesec} % Required for the Chapter & Section fonts adjustment
+\usepackage{titletoc} % Required for the Content fonts adjustment
+\usepackage[toc,page]{appendix} % Required for the appendix environment
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage{courier} % Required for the courier font
+\usepackage{float} % Required for the Here float
+\usepackage{graphicx} % Required to insert images
+\usepackage{wrapfig}
+\usepackage{booktabs} % Required for the hline of the three lines table
+\usepackage{multirow} % Required for the multirow of table
+\usepackage{listings} % Required for insertion of code
+\usepackage{indentfirst} % Required for the indent before each paragraph
+\usepackage[bookmarks=true,colorlinks=true,linkcolor=black,anchorcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+%\usepackage{cite} % Required for the ref and cite
+\usepackage[usenames,dvipsnames]{color} % Required for custom colors
+\usepackage{courier} % Required for the courier font
+\usepackage[font=footnotesize,tableposition=top]{caption} % Required for the footnote size captions of figures and tables
+\usepackage[numbers,sort&compress]{natbib}
+
+
+%----------------------------------------------------------------------------------------
+%   Superscript citation
+%----------------------------------------------------------------------------------------
+\newcommand{\upcite}[1]{\textsuperscript{\textsuperscript{\cite{#1}}}}
+
+%----------------------------------------------------------------------------------------
+%   Section related equations' number
+%----------------------------------------------------------------------------------------
+\makeatletter
+\@addtoreset{equation}{section}
+\makeatother
+\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
