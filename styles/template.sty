@@ -1,9 +1,11 @@
 % This file contains the core required packages in LaTeX which 
 % can be used in various document class z.B. article, report,
 % CV and motivation letters
-\ProvidesPackage{template}
+\ProvidesFile{styles/template.sty}
 
-\usepackage[fntef,heading,fontset=fandol]{ctex} % Chinese support with portable fonts
+\usepackage[heading,fontset=none]{ctex} % Chinese support with explicit font selection
+\IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{\setmainfont{TeX Gyre Termes}}
+\IfFileExists{C:/Windows/Fonts/simsun.ttc}{\setCJKmainfont{SimSun}}{\setCJKmainfont{Songti SC}}
 \usepackage{fancyhdr} % Required for custom headers
 \usepackage{setspace} % Required for the space setting
 \usepackage{titlesec} % Required for the Chapter & Section fonts adjustment
@@ -39,3 +41,9 @@
 \@addtoreset{equation}{section}
 \makeatother
 \renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
+
+% Section formatting: small four, bold, Songti
+\ctexset{
+  section={format=\zihao{-4}\bfseries\songti},
+  subsection={format=\zihao{-4}\bfseries\songti}
+}

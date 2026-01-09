@@ -1,6 +1,4 @@
 % This LaTeX document needs to be compiled with XeLaTeX.
-%!mode::"TeX:UTF-8"
-% !TEX program = xelatex
 \documentclass[
   10
 ]{article}
@@ -11,10 +9,11 @@
 \usepackage{amsmath,amssymb}
 \usepackage{amsfonts}
 \usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
 \usepackage{bbold}
 \usepackage{polyglossia}
 \usepackage{fontspec}
-\usepackage[fontset=none]{ctex}
+\usepackage{ctex}
 \usepackage[export]{adjustbox}
 \usepackage{tabularx}
 \usepackage{booktabs}
@@ -47,6 +46,7 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
+
 \hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
 \urlstyle{same}
 
@@ -58,32 +58,37 @@
 \setlength{\aboverulesep}{0pt}
 \setlength{\belowrulesep}{0pt}
 
+
 \setotherlanguages{english}
+\IfFontExistsTF{Source Han Serif CN}
+{\newfontfamily\chinesefont{Source Han Serif CN}}
+{\IfFontExistsTF{Noto Serif CJK SC}
+  {\newfontfamily\chinesefont{Noto Serif CJK SC}}
+  {\IfFontExistsTF{SimSun}
+    {\newfontfamily\chinesefont{SimSun}}
+    {\IfFontExistsTF{FangSong}
+      {\newfontfamily\chinesefont{FangSong}}
+      {\newfontfamily\chinesefont{Arial Unicode MS}}
+}}}
 \IfFontExistsTF{Times New Roman}
-{\setmainfont{Times New Roman}}
-{\IfFontExistsTF{Times}
-  {\setmainfont{Times}}
-  {\IfFontExistsTF{Liberation Serif}
-    {\setmainfont{Liberation Serif}}
-    {\setmainfont{Times New Roman}}
+{\newfontfamily\englishfont{Times New Roman}}
+{\IfFontExistsTF{Liberation Serif}
+  {\newfontfamily\englishfont{Liberation Serif}}
+  {\IfFontExistsTF{DejaVu Serif}
+    {\newfontfamily\englishfont{DejaVu Serif}}
+    {\newfontfamily\englishfont{Arial}}
 }}
-\IfFontExistsTF{Hiragino Sans GB}
-{\setCJKmainfont{Hiragino Sans GB}}
-{\IfFontExistsTF{STHeiti Light}
-  {\setCJKmainfont{STHeiti Light}}
-  {\IfFontExistsTF{STHeiti Medium}
-    {\setCJKmainfont{STHeiti Medium}}
-    {\setCJKmainfont{Hiragino Sans GB}}
-}}
+
 
 \author{}
 \date{}
 
 \begin{document}
 
-\section{研究生课程论文}
 
-\section{课程论文名称}
+\section{研究生课程论文}\label{ux7814ux7a76ux751fux8bfeux7a0bux8bbaux6587}
+
+\section{课程论文名称}\label{ux8bfeux7a0bux8bbaux6587ux540dux79f0}
 
 研究生：李XX
 
@@ -115,27 +120,33 @@
 \end{longtable}
 }
 
-\section{说明}
+\section{说明}\label{ux8bf4ux660e}
 
 1、课程论文要有题目、作者姓名、摘要、关键词、正文及参考文献。论文题目由研究生结合课程所学内容选定；摘要500字以下，博士生课程论文要求有英文摘要；关键词3\textasciitilde5个；参考文献不少于10篇，并应有一定的外文文献。
 
 2、课程论文须由本人独立撰写，不得抄袭、剽窃、代写，不得使用人工智能工具或软件生成内容。若发现存在上述行为，按作弊处理，本门课程考核成绩计0分。
 
-3、课程论文用A4纸双面打印。字体全部用宋体简体，题目要求用小二号字加粗，标题行要求用小四号字加粗，正文内容要求用小四号字；经学院同意，课程论文可以用英文撰写，字体全部用Times New Roman，题目要求用18号字加粗；标题行要求用14号字加粗，正文内容要求用12号字；行距为2倍行距（方便教师批注）；页边距左为 \(3\mathrm{cm}\) 、右为 \(2\mathrm{cm}\) 、上为 \(2.5\mathrm{cm}\) 、下为 \(2.5\mathrm{cm}\) ；其它格式请参照学位论文要求。
+3、课程论文用A4纸双面打印。字体全部用宋体简体，题目要求用小二号字加粗，标题行要求用小四号字加粗，正文内容要求用小四号字；经学院同意，课程论文可以用英文撰写，字体全部用Times
+New
+Roman，题目要求用18号字加粗；标题行要求用14号字加粗，正文内容要求用12号字；行距为2倍行距（方便教师批注）；页边距左为
+\(3\mathrm{cm}\) 、右为 \(2\mathrm{cm}\) 、上为 \(2.5\mathrm{cm}\)
+、下为 \(2.5\mathrm{cm}\) ；其它格式请参照学位论文要求。
 
 4、学位类别按博士、硕士填写，学习形式按全日制、非全日制填写。
 
 5、篇幅、内容等由任课教师提出具体要求。
 
-\section{硕士课程论文}
+\section{硕士课程论文}\label{ux7855ux58ebux8bfeux7a0bux8bbaux6587}
 
-\section{中文题目 (宋体，小二号字，加粗)}
+\section{中文题目
+(宋体，小二号字，加粗)}\label{ux4e2dux6587ux9898ux76ee-ux5b8bux4f53ux5c0fux4e8cux53f7ux5b57ux52a0ux7c97}
 
 研究生姓名 (宋体，四号字，加粗)
 
 摘要 (小四号字加粗) : \(\times   \times   \times\) (小四号字)
 
-关键词 (小四号字加粗) : \(\times \times ; \times \times ; \cdots\) (小四号字)
+关键词 (小四号字加粗) : \(\times \times ; \times \times ; \cdots\)
+(小四号字)
 
 正文部分（标题行用小四号字加粗，正文内容用小四号字）
 
@@ -145,15 +156,17 @@
 
 注：正式上交课程论文时，请删除蓝色字体内容
 
-\section{博士课程论文}
+\section{博士课程论文}\label{ux535aux58ebux8bfeux7a0bux8bbaux6587}
 
-\section{中文题目 (宋体，小二号字，加粗)}
+\section{中文题目
+(宋体，小二号字，加粗)}\label{ux4e2dux6587ux9898ux76ee-ux5b8bux4f53ux5c0fux4e8cux53f7ux5b57ux52a0ux7c97-1}
 
 研究生姓名 (宋体，四号字，加粗)
 
 摘要（小四号字加粗）： \(\times \times x\) （小四号字）
 
-关键词（小四号字加粗）： \(\times \times\) ； \(\times \times\) ；\ldots（小四号字）
+关键词（小四号字加粗）： \(\times \times\) ； \(\times \times\)
+；\ldots（小四号字）
 
 正文部分（标题行用小四号字加粗，正文内容用小四号字）
 
@@ -161,13 +174,15 @@
 
 {[}1{]} \(\times \times \times\) （五号字）
 
-\section{英文题目 (Times New Roman, 18 号字，加粗)}
+\section{英文题目 (Times New Roman, 18
+号字，加粗)}\label{ux82f1ux6587ux9898ux76ee-times-new-roman-18-ux53f7ux5b57ux52a0ux7c97}
 
 研究生姓名拼音 (Times New Roman, 14 号字，加粗)
 
 Abstract (12号字加粗) : \(\times \times \times\) (12号字)
 
-Key words (12 号字加粗) : \(\times   \times  , \times   \times  ,\ldots\) (12 号字)
+Key words (12 号字加粗) :
+\(\times   \times  , \times   \times  ,\ldots\) (12 号字)
 
 注：正式上交课程论文时，请删除蓝色字体内容
 
