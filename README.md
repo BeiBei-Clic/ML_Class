@@ -28,6 +28,13 @@ latexmk main.tex
 
 编译产物统一输出到 `build/`。
 
+## 改完后快速测试
+
+在项目根目录：
+```
+xelatex -interaction=nonstopmode -halt-on-error tex/main.tex
+```
+
 ## 如何开始写论文
 
 1. 打开 `tex/main.tex`，在 `longtable` 环境内写正文内容。
