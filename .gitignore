@@ -20,3 +20,4 @@
 *.ps
 *.pdf
 *.missfont.log
+claude-provider.sh

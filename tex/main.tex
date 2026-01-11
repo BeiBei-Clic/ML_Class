@@ -67,14 +67,33 @@
     {\setmainfont{Liberation Serif}}
     {\setmainfont{Times New Roman}}
 }}
-\IfFontExistsTF{Hiragino Sans GB}
-{\setCJKmainfont{Hiragino Sans GB}}
-{\IfFontExistsTF{STHeiti Light}
-  {\setCJKmainfont{STHeiti Light}}
-  {\IfFontExistsTF{STHeiti Medium}
-    {\setCJKmainfont{STHeiti Medium}}
-    {\setCJKmainfont{Hiragino Sans GB}}
-}}
+\newcommand*{\CJKMainFontName}{Songti SC Regular}
+\IfFontExistsTF{Songti SC Regular}{}{%
+  \IfFontExistsTF{Songti SC}{\renewcommand*{\CJKMainFontName}{Songti SC}}{%
+    \IfFontExistsTF{STSongti-SC-Regular}{\renewcommand*{\CJKMainFontName}{STSongti-SC-Regular}}{%
+      \IfFontExistsTF{STSong}{\renewcommand*{\CJKMainFontName}{STSong}}{%
+        \IfFontExistsTF{FandolSong-Regular}{\renewcommand*{\CJKMainFontName}{FandolSong-Regular}}{}%
+      }%
+    }%
+  }%
+}
+\setCJKmainfont{\CJKMainFontName}
+\newcommand*{\CJKSansFontName}{Heiti SC Light}
+\IfFontExistsTF{Heiti SC Light}{}{%
+  \IfFontExistsTF{STHeitiSC-Light}{\renewcommand*{\CJKSansFontName}{STHeitiSC-Light}}{%
+    \IfFontExistsTF{STHeiti Light}{\renewcommand*{\CJKSansFontName}{STHeiti Light}}{%
+      \IfFontExistsTF{Heiti SC}{\renewcommand*{\CJKSansFontName}{Heiti SC}}{%
+        \IfFontExistsTF{STHeiti}{\renewcommand*{\CJKSansFontName}{STHeiti}}{%
+          \IfFontExistsTF{FandolHei-Regular}{\renewcommand*{\CJKSansFontName}{FandolHei-Regular}}{}%
+        }%
+      }%
+    }%
+  }%
+}
+\setCJKsansfont{\CJKSansFontName}
+\setCJKfamilyfont{hei}{\CJKSansFontName}
+\setCJKfamilyfont{song}{\CJKMainFontName}
+\providecommand{\heiti}{\CJKfamily{hei}}
 
 \author{}
 \date{}
