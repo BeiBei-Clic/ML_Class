@@ -1,3 +1,55 @@
-\section{Method}
-建议结构：问题定义 $\rightarrow$ 模型/算法 $\rightarrow$ 训练或求解 $\rightarrow$ 推理与复杂度。
-可以配一张整体框图与算法伪代码，突出影响性能与稳定性的实现细节。
+\section{方法}
+本节介绍 EditFlow 框架。我们将符号回归问题重新表述为一个以数据为条件的离散序列编辑过程。该框架由三个核心组件构成：(1) 用于处理非结构化观测数据的 SetTransformer 条件编码器；(2) 基于 LLaMA 并集成交叉注意力机制的 EditFlow 骨干网络；(3) 基于流匹配思想的迭代编辑训练与推理机制。
+
+\subsection{问题定义：离散编辑流}
+给定输入变量 $\mathbf{X}\in\mathbb{R}^{N\times d}$ 与目标响应 $\mathbf{y}\in\mathbb{R}^{N}$，符号回归的目标是找到一个显式表达式 $f$ 使得 $f(\mathbf{X})\approx \mathbf{y}$。在 EditFlow 中，表达式被表示为离散 Token 序列 $\mathbf{z}=(z_1,\ldots,z_T)$，其中 $z_t\in\mathcal{V}$，$\mathcal{V}$ 为词汇表。
+
+不同于自回归模型一次性预测完整序列，EditFlow 学习一个编辑策略
+\[
+p_{\theta}(o_t \mid \mathbf{z}_t, \mathbf{c}),\quad o_t \in \mathcal{O}=\{\mathrm{ins},\mathrm{del},\mathrm{sub},\mathrm{keep}\},
+\]
+其中 $\mathbf{z}_t$ 是当前表达式状态，$\mathbf{c}$ 是数据条件的嵌入表示。模型通过多步迭代 $\mathbf{z}_0 \rightarrow \mathbf{z}_1 \rightarrow \cdots \rightarrow \mathbf{z}_K$，逐步将初始状态（随机序列或简单项）编辑为最优解。
+
+\subsection{条件编码器：SetTransformer}
+符号回归的输入 $(\mathbf{X}, \mathbf{y})$ 是一组无序数据点对，具有置换不变性。为有效提取全局数据特征，我们采用 SetTransformer 作为条件编码器。具体而言，将每个数据点构建为向量 $\mathbf{s}_i=[\mathbf{x}_i;\, y_i]$，条件编码器 $g_{\phi}$ 通过自注意力与诱导点注意力进行特征交互与压缩，最后通过池化得到固定长度的条件向量：
+\[
+\mathbf{H}=\mathrm{SAB}(\{\mathbf{s}_i\}_{i=1}^{N}),\quad
+\tilde{\mathbf{H}}=\mathrm{ISAB}(\mathbf{H}),\quad
+\mathbf{c}=\mathrm{PMA}(\tilde{\mathbf{H}}).
+\]
+该条件向量 $\mathbf{c}$ 在编辑过程中保持不变，持续指引表达式向拟合数据的方向演化。
+
+\subsection{EditFlow 骨干网络：LlamaEditFlowBackbone}
+为了利用大语言模型在符号理解上的能力，我们基于 LLaMA 架构设计编辑模型，并做了两项关键改造。
+
+\textbf{交叉注意力注入。} 在 LLaMA 的每一层后引入交叉注意力模块，以表达式 Token 序列为 Query，条件向量 $\mathbf{c}$ 为 Key/Value。该设计使模型在更新每个节点表示时能够动态查询数据特征，从而判断当前结构是否符合数据分布。
+
+\textbf{多头编辑预测。} 标准 LLaMA 仅输出下一个 Token 的概率，而 EditFlow 需要对当前位置执行的编辑动作进行预测。为此，我们设计三类并行预测头：
+\[
+\mathbf{r}_t=\mathrm{RatesHead}(\mathbf{h}_t),\quad
+\mathbf{p}^{\mathrm{ins}}_t=\mathrm{InsertHead}(\mathbf{h}_t),\quad
+\mathbf{p}^{\mathrm{sub}}_t=\mathrm{SubHead}(\mathbf{h}_t),
+\]
+其中 $\mathbf{r}_t$ 的 softmax 给出四类编辑动作概率；$\mathbf{p}^{\mathrm{ins}}_t$ 与 $\mathbf{p}^{\mathrm{sub}}_t$ 分别表示插入与替换的词汇分布。最终的编辑决策由动作概率与词汇分布联合决定。
+
+\subsection{训练策略：对齐与流匹配}
+EditFlow 的训练需要为离散序列提供可学习的监督信号。核心问题是：在当前状态 $\mathbf{z}_t$ 下，为了接近目标序列 $\mathbf{z}^{\ast}$，每个位置应执行何种编辑操作。
+
+\textbf{随机化对齐。} 对源序列 $\mathbf{z}_0$ 与目标序列 $\mathbf{z}^{\ast}$，我们利用 Levenshtein 编辑距离进行动态规划对齐。当存在多条等代价最优路径时，采用随机化回溯策略，得到更丰富的编辑轨迹分布，从而避免模型过拟合单一路径。
+
+\textbf{流匹配损失。} 训练时使用数据生成器构造 $(\mathbf{z}_t, \mathbf{z}^{\ast})$ 对，其中 $\mathbf{z}_t$ 是对 $\mathbf{z}^{\ast}$ 进行随机破坏后的结果。模型需要预测能够恢复 $\mathbf{z}^{\ast}$ 的编辑流，损失定义为位置级编辑动作的交叉熵并叠加插入/替换词汇损失：
+\[
+\mathcal{L}=
+ -\sum_{t}\log p_{\theta}(o_t^{\ast}\mid \mathbf{z}_t,\mathbf{c})
+ -\sum_{t}\mathbb{I}[o_t^{\ast}=\mathrm{ins}]\log p_{\theta}(v_t^{\ast}\mid \mathbf{z}_t,\mathbf{c})
+ -\sum_{t}\mathbb{I}[o_t^{\ast}=\mathrm{sub}]\log p_{\theta}(v_t^{\ast}\mid \mathbf{z}_t,\mathbf{c}),
+\]
+其中 $o_t^{\ast}$ 与 $v_t^{\ast}$ 由对齐路径给出。为处理变长序列，引入特殊的 \texttt{<gap>} Token 显式表示插入位置。
+
+\subsection{迭代推理与常数优化}
+推理阶段采用迭代式贪婪搜索策略：
+\textbf{(1) 初始化：} 从简单表达式（如 \texttt{x0}）或随机序列开始；
+\textbf{(2) 迭代编辑：} 在每一步，模型根据 $\mathbf{z}_t$ 与条件 $\mathbf{c}$ 为各位置打分，选择全局分数最高的动作并执行，得到 $\mathbf{z}_{t+1}$，直至达到最大步数或模型偏向 \texttt{keep}；
+\textbf{(3) 常数优化：} 对表达式中的常数 Token，使用 BFGS 进行数值微调以最小化均方误差（MSE）。
+
+这种“生成-编辑-优化”的循环使模型能够通过反复试错与修正逐步逼近数据背后的真实规律。

@@ -50,6 +50,12 @@
 \hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
 \urlstyle{same}
 
+% 中文图表前缀
+\usepackage{caption}
+\captionsetup{labelfont=bf,labelsep=space}
+\renewcommand{\tablename}{表}
+\renewcommand{\figurename}{图}
+
 \usepackage{colortbl}
 \definecolor{table-row-color}{HTML}{999999}
 \definecolor{table-rule-color}{HTML}{999999}
@@ -105,20 +111,11 @@
 \input{tex/sections/title-abstract}
 \input{tex/sections/introduction}
 \input{tex/sections/related-work}
-\input{tex/sections/background}
 \input{tex/sections/method}
-\input{tex/sections/theory-analysis}
 \input{tex/sections/experiments}
-\input{tex/sections/discussion}
-\input{tex/sections/limitations}
 \input{tex/sections/conclusion}
 
 \bibliographystyle{unsrt}
 \bibliography{references/refs}
-
-\input{tex/sections/checklist}
-
-\appendix
-\input{tex/sections/appendix}
 
 \end{document}
