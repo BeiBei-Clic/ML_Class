@@ -1,2 +1,28 @@
 \section{Related Work}
-按与你的方法、设定或评测最相关的维度分组讨论，不做流水账；最后点明你的差异与必要性。
+本节重点讨论基于深度学习的符号回归方法与基于编辑的生成模型。我们从序列生成机制、搜索策略优化以及离散流匹配原理三个维度展开论述，并在最后指出本文方法的关键差异。
+
+\subsection{基于深度学习的自回归方法}
+自回归（Autoregressive, AR）模型是当前深度符号回归的主流范式。其核心思想是将数学表达式树通过前序遍历映射为离散 Token 序列 $\mathbf{z}=(z_1,\ldots,z_T)$，并将符号回归建模为在给定观测数据 $(\mathbf{X}, \mathbf{y})$ 条件下的序列生成问题。
+
+\textbf{序列建模与端到端训练。} Biggio 等人\cite{biggio2021nsr}率先提出这一框架，利用 LSTM 编码器处理输入数据点的特征，通过解码器最大化对数似然来生成表达式。Kamienny 等人\cite{kamienny2022e2e}将该架构升级为大规模 Transformer，并引入专门的数值编码器以处理高精度浮点常量。这类方法通常采用标准交叉熵损失进行训练，即
+\[
+\max_{\theta}\sum_{(\mathbf{X}, \mathbf{y})}\log p_{\theta}\!\left(\mathbf{z}\mid \mathbf{X}, \mathbf{y}\right),
+\]
+推理阶段多使用集束搜索（Beam Search）生成候选表达式。
+
+\textbf{搜索策略与强化学习集成。} 为缓解自回归生成的“短视”问题，后续研究将规划与强化学习引入解码过程。Shojaee 等人\cite{shojaee2023planning}提出基于 Transformer 的规划方法，将预训练模型作为策略网络嵌入到蒙特卡洛树搜索（MCTS）中；生成过程中同时利用价值网络评估子树完成后的拟合误差，从而剪枝低潜力分支。Yu 等人\cite{yu2024mdlformer}从信息论视角出发提出基于最小描述长度（MDL）的损失，在优化过程中显式惩罚过长的序列描述，迫使模型在拟合精度与模型复杂度之间寻找平衡。Tian 等人\cite{tian2025interactive}采用离线强化学习框架，通过 Critic 网络评估生成轨迹的长期回报，实现对生成策略的迭代优化。
+
+尽管上述改进提升了搜索效率，AR 模型本质上仍受限于单调生成顺序。一旦在根节点或高层算子生成错误，后续 Token 即使局部最优也难以纠正整体结构偏差，导致其在深层嵌套公式场景下鲁棒性不足。
+
+\subsection{基于编辑的生成模型与流匹配}
+与一次生成的 AR 模型不同，基于编辑（Edit-based）的模型允许对序列进行非单调修改（插入、删除、替换），从而具备纠错与精细化优化的能力。下文统一记编辑操作集合为 $\mathcal{O}=\{\mathrm{ins}, \mathrm{del}, \mathrm{sub}\}$。
+
+\textbf{非自回归编辑模型。} Gu 等人提出的 Levenshtein Transformer\cite{gu2019levenshtein}是该方向的代表性工作。该模型通过删除分类器与插入分类器并行预测，在多轮迭代中先删除不合适的 Token，再预测插入占位符数量并填充具体 Token，从而逐步精炼序列。Zheng 等人\cite{zheng2024smieditor}将该机制迁移至分子生成，提出 Smi-editor，通过片段级编辑实现 SMILES 序列的定向优化。这类方法打破了从左到右的生成限制，但通常依赖复杂的训练策略来模拟编辑轨迹。
+
+\textbf{离散流匹配（Discrete Flow Matching）。} Havasi 等人\cite{havasi2025editflows}提出的 Edit Flows 理论将离散编辑过程纳入流匹配框架。该方法将编辑操作视为状态空间中的概率流，利用 Levenshtein 距离等动态规划算法计算源序列 $\mathbf{z}_0$ 与目标序列 $\mathbf{z}^{\ast}$ 之间的最优对齐路径，从而获得每个时间步 $t$ 的编辑操作分布。训练目标不再是预测下一个 Token，而是最小化预测编辑流与真实编辑流之间的差异，例如
+\[
+\min_{\theta}\ \mathbb{E}_{t, \mathbf{z}_t}\left[\left\lVert u_{\theta}(\cdot \mid \mathbf{z}_t, \mathbf{X}, \mathbf{y}) - u^{\ast}(\cdot \mid \mathbf{z}_t, \mathbf{z}^{\ast})\right\rVert^{2}\right],
+\]
+其中 $u_{\theta}$ 表示模型对 $\mathcal{O}$ 的预测分布，$u^{\ast}$ 表示由最优对齐路径定义的目标编辑流。该视角使模型能够将任意次优序列逐步“流”向目标序列。
+
+上述编辑建模与流匹配机制与符号回归的“结构搜索 + 参数微调”需求高度契合：删除操作可去除冗余项，插入操作可补全缺失算子，替换操作可修正错误变量或常数。本文方法在此基础上进一步引入条件编码与迭代式搜索策略，使编辑过程受数据分布强约束并具备更稳定的收敛行为。
