@@ -4,26 +4,23 @@
 
 ## 项目结构
 
-- `tex/`：主文件与封面等 TeX 源文件
+- `tex/`：主文件与章节入口
   - `tex/main.tex`：主入口，编译这个文件
   - `tex/cover.tex`：封面页
+  - `tex/sections/`：各章节拆分文件
 - `styles/`：样式与宏包配置
   - `styles/template.sty`：模板样式
-- `figures/`：图片资源（如封面图）
+- `figures/`：图片资源（建议按章节建子目录）
+- `references/`：参考文献统一管理
+  - `references/refs.bib`：BibTeX 文献库
 - `build/`：编译产物（PDF、辅助文件）
 - `.latexmkrc`：根目录编译配置
-- `tex/.latexmkrc`：在 `tex/` 目录编译时的配置
 
 ## 编译方式（推荐）
 
 在项目根目录：
 ```
 latexmk tex/main.tex
-```
-
-在 `tex/` 目录：
-```
-latexmk main.tex
 ```
 
 编译产物统一输出到 `build/`。
@@ -37,13 +34,16 @@ xelatex -interaction=nonstopmode -halt-on-error tex/main.tex
 
 ## 如何开始写论文
 
-1. 打开 `tex/main.tex`，在 `longtable` 环境内写正文内容。
+1. 在 `tex/sections/` 中按章节写作内容，`tex/main.tex` 负责统一组织。
 2. 如果需要封面，编辑 `tex/cover.tex` 中的姓名、学院、日期等信息。
-3. 图片放在 `figures/`，在 `tex/main.tex` 中用 `\\includegraphics` 引用。
-4. 编译生成 PDF，查看 `build/main.pdf`。
+3. 图片放在 `figures/`（建议分子目录），在正文中用 `\\includegraphics` 引用。
+4. 文献条目统一写在 `references/refs.bib`，正文中用 `\\cite{key}`。
+5. 编译生成 PDF，查看 `build/main.pdf`。
 
 ## 架构说明（为什么这样组织）
 
+- **模块化写作**：章节拆分到 `tex/sections/`，结构清晰、易协作。
+- **文献统一管理**：`references/refs.bib` 集中维护，引用一致可追溯。
 - **源文件与产物分离**：`tex/` 管源码、`build/` 放产物，目录清爽。
 - **样式集中管理**：`styles/template.sty` 统一管理字体、排版、宏包。
 - **资源集中管理**：`figures/` 统一存图片，便于维护与版本控制。

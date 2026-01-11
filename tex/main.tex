@@ -102,64 +102,23 @@
 
 \input{tex/cover}
 
-\section{Title and Abstract}
-\textbf{Title:} 在此填写论文题目（简洁、可检索、包含核心概念）。
+\input{tex/sections/title-abstract}
+\input{tex/sections/introduction}
+\input{tex/sections/related-work}
+\input{tex/sections/background}
+\input{tex/sections/method}
+\input{tex/sections/theory-analysis}
+\input{tex/sections/experiments}
+\input{tex/sections/discussion}
+\input{tex/sections/limitations}
+\input{tex/sections/conclusion}
 
-\textbf{Authors:} 在此填写作者信息（匿名投稿时可隐藏）。
+\bibliographystyle{plain}
+\bibliography{references/refs}
 
-\textbf{Abstract:} 用一段话覆盖问题、方法、结果与意义，控制在 150--250 词。
-
-\textbf{Keywords:} 3--5 个关键词。
-
-\section{Introduction}
-动机与问题背景、研究空白、关键直觉与贡献点。建议在文末用项目符号列出 2--4 条贡献：
-\begin{itemize}
-  \item 贡献 1：描述核心方法或视角。
-  \item 贡献 2：描述关键实验或理论结果。
-  \item 贡献 3：描述可复现性或新基准。
-\end{itemize}
-
-\section{Related Work}
-按与你的方法、设定或评测最相关的维度分组讨论，不做流水账；最后点明你的差异与必要性。
-
-\section{Background / Preliminaries}
-当依赖新设定或符号体系时提供必要背景；否则可合并至方法部分。
-
-\section{Method}
-建议结构：问题定义 $\rightarrow$ 模型/算法 $\rightarrow$ 训练或求解 $\rightarrow$ 推理与复杂度。
-可以配一张整体框图与算法伪代码，突出影响性能与稳定性的实现细节。
-
-\section{Theory / Analysis}
-给出关键定理、假设条件与证明思路；完整证明可放附录。
-
-\section{Experiments}
-\textbf{Setup:} 数据集、基线、指标、实现细节与算力配置。
-
-\textbf{Main Results:} 主表与统计显著性（若适用）。
-
-\textbf{Ablations:} 模块、超参或数据量消融。
-
-\textbf{Efficiency:} 时间、显存与吞吐。
-
-\textbf{Qualitative:} 可视化与失败案例（可选）。
-
-\section{Discussion}
-讨论机制解释、适用边界、可能失败场景与与已有方法的联系。
-
-\section{Limitations}
-单列关键假设与潜在失效情形，避免被 reviewer 在 Checklist 中追问。
-
-\section{Conclusion}
-简短总结贡献与结果，并指出下一步工作方向。
-
-\section*{References}
-参考文献放在此处，不少于课程要求数量。
-
-\section*{NeurIPS Paper Checklist}
-按官方 Checklist 填写（需要随主文同一 PDF 提交）。
+\input{tex/sections/checklist}
 
 \appendix
-\section{Appendix}
-放置完整证明、更多实验、实现细节与附加可视化。
+\input{tex/sections/appendix}
 
 \end{document}
