@@ -1,5 +1,5 @@
 \section{方法}
-本节介绍 EditFlow 框架。我们将符号回归问题重新表述为一个以数据为条件的离散序列编辑过程。该框架由三个核心组件构成：(1) 用于处理非结构化观测数据的 SetTransformer 条件编码器；(2) 基于 LLaMA 并集成交叉注意力机制的 EditFlow 骨干网络；(3) 基于流匹配思想的迭代编辑训练与推理机制。
+本节介绍基于 Edit Flows 的 EditFlow 框架，并将符号回归问题重新表述为一个以数据为条件的离散序列编辑过程。该框架由三个核心组件构成：(1) 用于处理非结构化观测数据的 SetTransformer 条件编码器；(2) 基于 LLaMA 并集成交叉注意力机制的 EditFlow 骨干网络；(3) 基于流匹配思想的迭代编辑训练与推理机制。
 
 \subsection{问题定义：离散编辑流}
 给定输入变量 $\mathbf{X}\in\mathbb{R}^{N\times d}$ 与目标响应 $\mathbf{y}\in\mathbb{R}^{N}$，符号回归的目标是找到一个显式表达式 $f$ 使得 $f(\mathbf{X})\approx \mathbf{y}$。在 EditFlow 中，表达式被表示为离散 Token 序列 $\mathbf{z}=(z_1,\ldots,z_T)$，其中 $z_t\in\mathcal{V}$，$\mathcal{V}$ 为词汇表。
