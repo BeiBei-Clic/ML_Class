@@ -11,7 +11,6 @@
 \usepackage{amsmath,amssymb}
 \usepackage{amsfonts}
 \usepackage[version=4]{mhchem}
-\usepackage{bbold}
 \usepackage{polyglossia}
 \usepackage{fontspec}
 \usepackage[fontset=none]{ctex}
@@ -84,6 +83,7 @@
   }%
 }
 \setCJKmainfont{\CJKMainFontName}
+\setCJKmonofont{\CJKMainFontName}
 \newcommand*{\CJKSansFontName}{Heiti SC Light}
 \IfFontExistsTF{Heiti SC Light}{}{%
   \IfFontExistsTF{STHeitiSC-Light}{\renewcommand*{\CJKSansFontName}{STHeitiSC-Light}}{%
