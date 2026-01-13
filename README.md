@@ -29,7 +29,7 @@ latexmk tex/main.tex
 
 在项目根目录：
 ```
-xelatex -interaction=nonstopmode -halt-on-error tex/main.tex
+xelatex -interaction=nonstopmode -halt-on-error -output-directory=build tex/main.tex
 ```
 
 ## 如何开始写论文
