@@ -339,6 +339,49 @@ $p'=\sigma(0.30)=\frac{1}{1+e^{-0.30}}\approx 0.574$.
 
 \noindent 这一例子把监督学习的闭环压缩成了可计算的形式。模型给出概率 $p$，标签提供目标 $y$，二者差异 $p-y$ 形成更新信号，更新信号推动参数改变，参数改变又影响下一次预测。理解了这条闭环，监督学习的其他算法，如线性回归、SVM、神经网络等，在结构上都可以看作同一思想的不同实现。
 
+\noindent \textbf{5）代码实现}
+
+\noindent 下面用Python代码实现上述逻辑回归的训练过程。这段代码与手算实例完全对应，展示了从初始化、预测、计算梯度到更新参数的完整流程。
+
+\begin{lstlisting}[language=Python, caption={逻辑回归单步更新的Python实现}]
+import numpy as np
+
+# Sigmoid函数：将分数压缩到(0,1)区间
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+# 定义样本和标签（对应手算实例）
+x = np.array([1, 2])    # 输入特征
+y = 1                   # 真实标签（正类）
+
+# 初始化参数
+w = np.array([0.0, 0.0])  # 权重向量
+b = 0.0                   # 偏置
+eta = 0.1                 # 学习率
+
+# 第一步：预测
+z = np.dot(w, x) + b      # 计算线性分数
+p = sigmoid(z)            # 转换为概率
+print(f"初始预测概率: {p:.3f}")  # 输出: 0.500
+
+# 第二步：计算梯度
+# 梯度 = (预测值 - 真实值) * 特征
+gradient_w = (p - y) * x   # 对w的梯度
+gradient_b = (p - y)       # 对b的梯度
+
+# 第三步：更新参数
+w = w - eta * gradient_w   # 更新权重
+b = b - eta * gradient_b   # 更新偏置
+
+print(f"更新后的权重: {w}")
+print(f"更新后的偏置: {b:.3f}")
+
+# 用新参数再次预测
+z_new = np.dot(w, x) + b
+p_new = sigmoid(z_new)
+print(f"更新后预测概率: {p_new:.3f}")  # 输出: 0.574
+\end{lstlisting}
+
 \subsubsection*{3.3.3\quad 无监督学习}
 
 \noindent \textbf{一\quad 无监督学习要解决什么问题}
@@ -410,6 +453,54 @@ $\mu_1^{(1)}=\frac{1+2+4}{3}=\frac{7}{3}\approx 2.33,\qquad
 \end{itemize}
 
 \noindent 指派不再变化，算法收敛。最终结果是将 $\{1,2,4\}$ 归为一组，$\{8\}$ 归为另一组。这个例子展示了无监督学习的典型特征：没有任何"正确分组"作为标签，分组完全由算法对"紧凑性"这一目标的偏好所驱动。
+
+\noindent \textbf{4）代码实现}
+
+\noindent 下面用Python代码实现K-means聚类的核心迭代过程。这段代码与手算实例完全对应，数据为一维数组 $[1,2,4,8]$，聚类数为 $K=2$。
+
+\begin{lstlisting}[language=Python, caption={K-means聚类的Python实现}]
+import numpy as np
+
+# 定义数据（对应手算实例）
+X = np.array([1, 2, 4, 8])
+K = 2  # 聚类数量
+
+# 初始化中心点
+centers = np.array([1.0, 8.0])  # mu1=1, mu2=8
+
+print("初始中心:", centers)
+
+# 第一轮迭代
+# 步骤1：指派更新（每个样本分配到最近的中心）
+assignments = np.array([0, 0, 0, 1])  # [1,2,4]->簇0, [8]->簇1
+print("第一轮指派:", assignments)
+
+# 步骤2：中心更新（计算每个簇的均值）
+cluster_0_points = X[assignments == 0]  # [1, 2, 4]
+cluster_1_points = X[assignments == 1]  # [8]
+new_centers = np.array([
+    np.mean(cluster_0_points),  # (1+2+4)/3 ≈ 2.33
+    np.mean(cluster_1_points)   # 8/1 = 8
+])
+print("第一轮更新后中心:", new_centers)
+
+# 第二轮迭代
+centers = new_centers
+# 重新计算距离并分配
+dist_to_center_0 = np.abs(X - centers[0])  # 到2.33的距离
+dist_to_center_1 = np.abs(X - centers[1])  # 到8的距离
+new_assignments = np.argmin(
+    np.vstack([dist_to_center_0, dist_to_center_1]),
+    axis=0
+)
+print("第二轮指派:", new_assignments)
+
+# 检查是否收敛
+if np.array_equal(assignments, new_assignments):
+    print("算法收敛，聚类结果稳定")
+    print(f"簇0: {X[assignments==0]}")
+    print(f"簇1: {X[assignments==1]}")
+\end{lstlisting}
 
 \noindent \textbf{三\quad 无监督学习与监督学习的关系}
 
@@ -497,6 +588,84 @@ $=0.9\times 2=1.8.$
 \noindent 再对比 $A$ 的动作 $R$。若经历样本 $(A,R,1,T)$，则
 $Q(A,R)\leftarrow 0+[1+0.9\cdot 0-0]=1.$
 于是学到的价值为 $Q(A,L)=1.8$ 大于 $Q(A,R)=1$，因此在状态 $A$ 下更应选择 $L$ 而不是 $R$。这个例子恰好体现了强化学习的核心：好的行为不一定带来即时奖励，它可能通过未来的路径产生更大的长期回报；Q-learning 正是用"当前奖励 $+$ 下一步最优价值"的方式把延迟收益逐步向前传播。
+
+\noindent \textbf{4）代码实现}
+
+\noindent 下面用Python代码实现Q-learning的核心更新过程。这段代码与手算实例完全对应，环境包含状态 $A,B$ 和终止状态 $T$，动作有 $L,R,U$。
+
+\begin{lstlisting}[language=Python, caption={Q-learning更新的Python实现}]
+import numpy as np
+
+# 状态和动作
+states = ['A', 'B', 'T']  # T是终止状态
+actions_A = ['L', 'R']     # 状态A的动作
+actions_B = ['U']          # 状态B的动作
+
+# 初始化Q值表（所有状态-动作对的初始值都为0）
+Q = {
+    'A': {'L': 0.0, 'R': 0.0},
+    'B': {'U': 0.0},
+    'T': {}
+}
+
+# 参数设置
+gamma = 0.9   # 折扣因子
+alpha = 1.0   # 学习率
+
+# 定义环境转移函数：返回(下一状态, 奖励)
+def step(state, action):
+    if state == 'A' and action == 'L':
+        return 'B', 0    # A->L转移到B，奖励0
+    elif state == 'A' and action == 'R':
+        return 'T', 1    # A->R直接到T，奖励1
+    elif state == 'B' and action == 'U':
+        return 'T', 2    # B->U到T，奖励2
+    return 'T', 0
+
+# Q-learning更新函数
+def q_update(state, action, reward, next_state):
+    # 获取下一状态的最大Q值
+    if next_state == 'T' or len(Q[next_state]) == 0:
+        max_q_next = 0  # 终止状态的价值为0
+    else:
+        max_q_next = max(Q[next_state].values())
+
+    # 计算时序差分误差
+    td_error = reward + gamma * max_q_next - Q[state][action]
+
+    # 更新Q值
+    Q[state][action] += alpha * td_error
+
+# 经历第一条样本：(A, L, 0, B)
+print("=== 第一条样本 (A, L, 0, B) ===")
+next_state, reward = step('A', 'L')
+q_update('A', 'L', reward, next_state)
+print(f"Q(A,L) = {Q['A']['L']}")  # 输出: 0.0
+
+# 经历第二条样本：(B, U, 2, T)
+print("\n=== 第二条样本 (B, U, 2, T) ===")
+next_state, reward = step('B', 'U')
+q_update('B', 'U', reward, next_state)
+print(f"Q(B,U) = {Q['B']['U']}")  # 输出: 2.0
+
+# 再次经历样本：(A, L, 0, B)
+print("\n=== 再次经历样本 (A, L, 0, B) ===")
+next_state, reward = step('A', 'L')
+q_update('A', 'L', reward, next_state)
+print(f"Q(A,L) = {Q['A']['L']}")  # 输出: 1.8
+
+# 经历样本：(A, R, 1, T)
+print("\n=== 样本 (A, R, 1, T) ===")
+next_state, reward = step('A', 'R')
+q_update('A', 'R', reward, next_state)
+print(f"Q(A,R) = {Q['A']['R']}")  # 输出: 1.0
+
+# 比较两个动作的价值
+print("\n=== 最终Q值 ===")
+print(f"Q(A,L) = {Q['A']['L']}")
+print(f"Q(A,R) = {Q['A']['R']}")
+print(f"最优动作: {'L' if Q['A']['L'] > Q['A']['R'] else 'R'}")
+\end{lstlisting}
 
 \noindent \textbf{三\quad 强化学习中的关键难点与实践要点}
 
