@@ -27,8 +27,8 @@
 
 \noindent \textbf{二\quad 模型、假设空间、参数与超参数}
 
-\noindent 为使概念精确且便于落地，本节使用同一例子贯穿，用线性模型预测房价。设输入为特征向量 $x \in \mathbb{R}^d$，输出为真实价格 $y \in \mathbb{R}$。训练数据集记为
-$\mathcal{D}=\{(x_i,y_i)\}_{i=1}^n$。模型、假设空间、参数与超参数之间的关系如图\ref{fig:3-3-1-model-concepts}所示。
+\noindent 为使概念精确且便于落地，本节使用同一例子贯穿，用线性模型预测房价。设输入为特征列向量 $\boldsymbol{x} \in \mathbb{R}^{d \times 1}$，输出为真实价格 $y \in \mathbb{R}$。训练数据集记为
+$\mathcal{D}=\{(\boldsymbol{x}_i,y_i)\}_{i=1}^n$。模型、假设空间、参数与超参数之间的关系如图\ref{fig:3-3-1-model-concepts}所示。
 
 \noindent \begin{figure}[htbp]
 \centering
@@ -42,26 +42,26 @@ $\mathcal{D}=\{(x_i,y_i)\}_{i=1}^n$。模型、假设空间、参数与超参数
 \noindent \textbf{1）模型}
 
 \noindent 在机器学习语境中，模型更准确地指一族参数化函数，用来近似真实但未知的映射关系。在线性回归中，我们选用如下参数化形式
-$\hat{y}=f(x;\theta)=w^\top x + b$，
-其中 $w\in\mathbb{R}^d$ 为权重向量，$b\in\mathbb{R}$ 为偏置，$\theta=(w,b)$ 为模型参数集合。
+$\hat{y}=f(\boldsymbol{x};\theta)=\boldsymbol{w}^\top \boldsymbol{x} + b$，
+其中 $\boldsymbol{w}\in\mathbb{R}^{d \times 1}$ 为权重列向量，$b\in\mathbb{R}$ 为标量偏置，$\theta=(\boldsymbol{w},b)$ 为模型参数对。
 
 \noindent 这一表达式的关键不在于给出某个具体预测值，而在于规定了预测函数必须属于仿射函数这一类。换言之，模型在此阶段只是定义了允许的函数形态，即线性叠加，而具体形态由参数决定。模型形式一旦确定，后续训练与评估都在这一形式的约束下展开。
 
-\noindent 线性是相对于特征表示 $x$ 而言的。若对原始变量做非线性变换并将其作为新特征，例如 $\log(\text{距离})$、$\text{面积}^2$、$\text{面积}\times\text{学区}$ 等，模型仍保持对特征向量 $x$ 的线性，但在原始变量上可表现为非线性。因此，模型表达能力并非只由公式是否线性决定，还取决于特征表示的构造方式。严格地说，模型形式与特征表示共同决定了可表达的函数集合。
+\noindent 线性是相对于特征表示 $\boldsymbol{x}$ 而言的。若对原始变量做非线性变换并将其作为新特征，例如 $\log(\text{距离})$、$\text{面积}^2$、$\text{面积}\times\text{学区}$ 等，模型仍保持对特征向量 $\boldsymbol{x}$ 的线性，但在原始变量上可表现为非线性。因此，模型表达能力并非只由公式是否线性决定，还取决于特征表示的构造方式。严格地说，模型形式与特征表示共同决定了可表达的函数集合。
 
 \noindent \textbf{2）表示与归纳偏置}
 
 \noindent 任何学习算法都不可能在所有可能函数上有效搜索，因此必须通过模型形式与特征表示引入结构性约束。这种约束可视为归纳偏置，即在观察有限样本后，我们倾向于选择哪类函数作为解释数据的规律。
 
-\noindent 在线性模型中，归纳偏置体现在，在给定表示 $x$ 下，输出随特征变化呈线性叠加，模型倾向于用各特征的加权贡献解释预测。这种偏置带来的直接后果是，当真实关系接近线性或可由合适特征变换线性化时，线性模型在样本较少、噪声存在的情况下往往更稳定。当真实关系强非线性且特征表示不足时，线性模型会出现系统性偏差，表现为欠拟合。
+\noindent 在线性模型中，归纳偏置体现在，在给定表示 $\boldsymbol{x}$ 下，输出随特征变化呈线性叠加，模型倾向于用各特征的加权贡献解释预测。这种偏置带来的直接后果是，当真实关系接近线性或可由合适特征变换线性化时，线性模型在样本较少、噪声存在的情况下往往更稳定。当真实关系强非线性且特征表示不足时，线性模型会出现系统性偏差，表现为欠拟合。
 
 \noindent 归纳偏置并非主观任性，而是学习可行性的必要条件。如果不通过某种方式限制候选函数集合，就无法在有限数据下形成可推广的结论。
 
 \noindent \textbf{3）假设与假设空间}
 
 \noindent 在学习理论中，假设指某个候选预测函数，假设空间指学习算法允许选择的全部候选函数集合。对于线性模型
-$\mathcal{H}=\{h_{w,b}(x)=w^\top x+b \mid w\in\mathbb{R}^d,\, b\in\mathbb{R}\}$。
-这里每一组 $(w,b)$ 都定义了一个具体假设 $h_{w,b}$，而 $\mathcal{H}$ 是所有这类仿射函数的集合。
+$\mathcal{H}=\{h_{\boldsymbol{w},b}(\boldsymbol{x})=\boldsymbol{w}^\top \boldsymbol{x}+b \mid \boldsymbol{w}\in\mathbb{R}^{d \times 1},\, b\in\mathbb{R}\}$。
+这里每一组 $(\boldsymbol{w},b)$ 都定义了一个具体假设 $h_{\boldsymbol{w},b}$，而 $\mathcal{H}$ 是所有这类仿射函数的集合。
 
 \noindent 这一形式化描述的意义在于，训练并不是创造一个函数，而是在 $\mathcal{H}$ 中选择一个函数。假设空间的大小与结构直接影响两类能力。一是可逼近能力，即是否包含足够接近真实规律的函数。二是可泛化能力，即在有限样本下是否容易被噪声误导。当 $\mathcal{H}$ 过小，模型即使训练充分也难以拟合主要规律。当 $\mathcal{H}$ 过大，模型可能在训练集上拟合得过好而对新样本不稳定。
 
@@ -69,15 +69,15 @@ $\mathcal{H}=\{h_{w,b}(x)=w^\top x+b \mid w\in\mathbb{R}^d,\, b\in\mathbb{R}\}$�
 
 \noindent \textbf{4）参数}
 
-\noindent 参数是由训练过程直接从数据中估计的量。在线性模型中，参数就是 $(w,b)$。训练的目标是在给定数据集 $\mathcal{D}$ 与某个训练准则下，选出最合适的参数，从而确定最终使用的具体假设 $h_{w,b}$。
+\noindent 参数是由训练过程直接从数据中估计的量。在线性模型中，参数就是 $(\boldsymbol{w},b)$。训练的目标是在给定数据集 $\mathcal{D}$ 与某个训练准则下，选出最合适的参数，从而确定最终使用的具体假设 $h_{\boldsymbol{w},b}$。
 
 \noindent 为了把参数学习说得严谨，需要明确训练准则。以最常用的平方损失为例，经验风险为
-$\hat{R}(w,b)=\frac{1}{n}\sum_{i=1}^n (y_i-(w^\top x_i+b))^2$。
+$\hat{R}(\boldsymbol{w},b)=\frac{1}{n}\sum_{i=1}^n \big(y_i-(\boldsymbol{w}^\top \boldsymbol{x}_i+b)\big)^2$。
 参数学习就是求解
-$(w^\ast,b^\ast)=\arg\min_{w,b}\ \hat{R}(w,b)$。
-在此框架下，$(w^\ast,b^\ast)$ 是由数据驱动的结果，数据改变，最优参数一般也会改变。由此可以看到，参数的本质是，在既定的函数族与训练准则下，对具体函数进行实例化的自由度。
+$(\boldsymbol{w}^\ast,b^\ast)=\arg\min_{\boldsymbol{w},b}\ \hat{R}(\boldsymbol{w},b)$。
+在此框架下，$(\boldsymbol{w}^\ast,b^\ast)$ 是由数据驱动的结果，数据改变，最优参数一般也会改变。由此可以看到，参数的本质是，在既定的函数族与训练准则下，对具体函数进行实例化的自由度。
 
-\noindent 参数还承担解释性角色。在不发生严重共线性且特征尺度可比的前提下，$w_j$ 反映了第 $j$ 个特征对预测的边际影响方向与强度。然而在实际数据中，特征相关性、尺度差异、以及特征工程引入的交互项常使单个权重的因果解释不成立，因此需要区分预测贡献意义与因果效应意义。
+\noindent 参数还承担解释性角色。在不发生严重共线性且特征尺度可比的前提下，$\boldsymbol{w}_j$ 反映了第 $j$ 个特征对预测的边际影响方向与强度。然而在实际数据中，特征相关性、尺度差异、以及特征工程引入的交互项常使单个权重的因果解释不成立，因此需要区分预测贡献意义与因果效应意义。
 
 \noindent \textbf{5）超参数}
 
@@ -105,12 +105,12 @@ $\mathcal{H}_\phi=\{h_{w,b}(x)=w^\top \phi(x)+b\}$。
 
 \noindent 即便在线性模型中，尤其采用迭代优化而非闭式解时，学习率、迭代步数、停止阈值等也属于超参数。它们不改变假设空间的定义，但会影响优化路径与收敛质量。学习率过大可能不收敛，过小则收敛缓慢并可能停在次优区域。停止策略则影响拟合到什么程度，从而间接影响泛化表现。
 
-\noindent 综上，在线性模型这一例子里，参数 $(w,b)$ 是训练要直接估计的对象。超参数如 $\lambda$、特征扩展规则、学习率等，则决定了模型容量与训练机制。二者在职责上严格分离。参数学习回答在既定学习问题下取哪个具体函数，超参数选择回答学习问题该如何定义才更有利于泛化。
+\noindent 综上，在线性模型这一例子里，参数 $(\boldsymbol{w},b)$ 是训练要直接估计的对象。超参数如 $\lambda$、特征扩展规则、学习率等，则决定了模型容量与训练机制。二者在职责上严格分离。参数学习回答在既定学习问题下取哪个具体函数，超参数选择回答学习问题该如何定义才更有利于泛化。
 
 \noindent \textbf{三\quad 损失函数、目标函数与优化}
 
-\noindent 仍以房价预测为贯穿例子。设输入特征向量 $x \in \mathbb{R}^d$，真实价格 $y \in \mathbb{R}$。训练数据为
-$\mathcal{D}=\{(x_i,y_i)\}_{i=1}^n$。
+\noindent 仍以房价预测为贯穿例子。设输入为特征列向量 $\boldsymbol{x} \in \mathbb{R}^{d \times 1}$，输出为真实价格 $y \in \mathbb{R}$。训练数据为
+$\mathcal{D}=\{(\boldsymbol{x}_i,y_i)\}_{i=1}^n$。
 可以把它理解为 $n$ 条历史成交记录，每条记录是一套房子的信息与成交价配对样本。损失函数、目标函数与优化的关系如图\ref{fig:3-3-loss-optimization}所示。
 
 \noindent \begin{figure}[htbp]
@@ -139,18 +139,18 @@ $\ell_{1}(y,\hat{y})=\lvert y-\hat{y}\rvert$。
 \noindent \textbf{2）经验风险与目标函数}
 
 \noindent 训练的基本策略是让模型在训练集上的平均损失尽可能小。平均损失称为经验风险
-$\hat{R}(\theta)=\frac{1}{n}\sum_{i=1}^n \ell\big(y_i,f(x_i;\theta)\big)$。
+$\hat{R}(\theta)=\frac{1}{n}\sum_{i=1}^n \ell\big(y_i,f(\boldsymbol{x}_i;\theta)\big)$。
 可以把它看成把每条样本的误差打分汇总后取平均，平均分越低，说明整体拟合越好。
 
 \noindent 在本例中采用线性模型
-$f(x;\theta)=w^\top x+b$，
+$f(\boldsymbol{x};\theta)=\boldsymbol{w}^\top \boldsymbol{x}+b$，
 并使用平方损失，则经验风险写为
-$\hat{R}(w,b)=\frac{1}{n}\sum_{i=1}^n \big(y_i-(w^\top x_i+b)\big)^2$。
+$\hat{R}(\boldsymbol{w},b)=\frac{1}{n}\sum_{i=1}^n \big(y_i-(\boldsymbol{w}^\top \boldsymbol{x}_i+b)\big)^2$。
 每套房子的误差是真实价减预测价，平方后求平均即得到训练集上的整体拟合误差。
 
 \noindent 因此，训练对应一个明确的优化问题
-$(w^\ast,b^\ast)=\arg\min_{w,b}\ \hat{R}(w,b)$。
-训练完成后输出的是一组参数 $(w^\ast,b^\ast)$，也就是在训练集上使平均误差最小的那条线性预测规则。
+$(\boldsymbol{w}^\ast,b^\ast)=\arg\min_{\boldsymbol{w},b}\ \hat{R}(\boldsymbol{w},b)$。
+训练完成后输出的是一组参数 $(\boldsymbol{w}^\ast,b^\ast)$，也就是在训练集上使平均误差最小的那条线性预测规则。
 
 \noindent \textbf{3）正则化}
 
@@ -177,18 +177,18 @@ $\theta_{t+1}=\theta_t-\eta \nabla_\theta J(\theta_t)$。
 每一步都沿着让目标变小最快的方向走一小步。学习率 $\eta$ 决定步长，过大可能震荡甚至发散，过小会收敛很慢。
 
 \noindent 为看清更新在纠正什么，先定义残差
-$r_i = y_i-(w^\top x_i+b)$。
+$r_i = y_i-(\boldsymbol{w}^\top \boldsymbol{x}_i+b)$。
 它就是第 $i$ 个样本真实值减预测值的误差，正值表示预测偏低，负值表示预测偏高。
 
 \noindent 在平方损失下，经验风险对参数的梯度为
-$\nabla_w \hat{R}(w,b)=-\frac{2}{n}\sum_{i=1}^n r_i x_i,\quad
-\frac{\partial \hat{R}(w,b)}{\partial b}=-\frac{2}{n}\sum_{i=1}^n r_i$。
-权重 $w$ 的更新由残差与特征的相关性驱动，某个特征在系统性低估或高估时更相关，它对应的权重就会被相应上调或下调。偏置 $b$ 则根据整体残差的平均方向调整，总体低估就上调 $b$，总体高估就下调 $b$。
+$\nabla_{\boldsymbol{w}} \hat{R}(\boldsymbol{w},b)=-\frac{2}{n}\sum_{i=1}^n r_i \boldsymbol{x}_i,\quad
+\frac{\partial \hat{R}(\boldsymbol{w},b)}{\partial b}=-\frac{2}{n}\sum_{i=1}^n r_i$。
+权重 $\boldsymbol{w}$ 的更新由残差与特征的相关性驱动，某个特征在系统性低估或高估时更相关，它对应的权重就会被相应上调或下调。偏置 $b$ 则根据整体残差的平均方向调整，总体低估就上调 $b$，总体高估就下调 $b$。
 
-\noindent 若加入岭正则 $\lambda\|w\|_2^2$，梯度变为
-$\nabla_w J(w,b)=-\frac{2}{n}\sum_{i=1}^n r_i x_i + 2\lambda w,\quad
-\frac{\partial J(w,b)}{\partial b}=-\frac{2}{n}\sum_{i=1}^n r_i$。
-额外项 $2\lambda w$ 会持续把权重往 0 拉回，从而抑制权重膨胀，提升模型稳定性。
+\noindent 若加入岭正则 $\lambda\|\boldsymbol{w}\|_2^2$，梯度变为
+$\nabla_{\boldsymbol{w}} J(\boldsymbol{w},b)=-\frac{2}{n}\sum_{i=1}^n r_i \boldsymbol{x}_i + 2\lambda \boldsymbol{w},\quad
+\frac{\partial J(\boldsymbol{w},b)}{\partial b}=-\frac{2}{n}\sum_{i=1}^n r_i$。
+额外项 $2\lambda \boldsymbol{w}$ 会持续把权重往 0 拉回，从而抑制权重膨胀，提升模型稳定性。
 
 \noindent \textbf{（2）批量、随机与小批量}
 
@@ -308,20 +308,20 @@ $\Delta(\theta)=\hat{R}_{\text{test}}(\theta)-\hat{R}_{\text{train}}(\theta)$。
 
 \noindent \textbf{一\quad 监督学习要解决什么问题}
 
-\noindent 监督学习处理的是有标准答案的学习。我们手里有一批样本，每个样本包含两部分，输入 $x$ 和对应的正确输出 $y$。把所有训练样本写成集合就是
-$\mathcal{D}=\{(x_i,y_i)\}_{i=1}^n$,
-其中 $x_i\in\mathbb{R}^d$ 是第 $i$ 个样本的 $d$ 维特征向量，$y_i\in\mathcal{Y}$ 是标签或目标值。监督学习要做的事，是从这些样本对里学到一个函数
-$f(\cdot;\theta):\mathbb{R}^d\to \mathcal{Y}$,
-使得当出现新的输入 $x$ 时，模型给出的预测 $\hat{y}=f(x;\theta)$ 尽可能接近真实的 $y$。
+\noindent 监督学习处理的是有标准答案的学习。我们手里有一批样本，每个样本包含两部分，输入 $\boldsymbol{x}$ 和对应的正确输出 $y$。把所有训练样本写成集合就是
+$\mathcal{D}=\{(\boldsymbol{x}_i,y_i)\}_{i=1}^n$,
+其中 $\boldsymbol{x}_i\in\mathbb{R}^{d \times 1}$ 是第 $i$ 个样本的 $d$ 维特征列向量，$y_i\in\mathcal{Y}$ 是标签或目标值。监督学习要做的事，是从这些样本对里学到一个函数
+$f(\cdot;\theta):\mathbb{R}^{d \times 1}\to \mathcal{Y}$,
+使得当出现新的输入 $\boldsymbol{x}$ 时，模型给出的预测 $\hat{y}=f(\boldsymbol{x};\theta)$ 尽可能接近真实的 $y$。
 
-\noindent $x_i$ 像题目，$y_i$ 像标准答案。训练的目的不是把题目背下来，而是从题目与答案的对应关系中总结出规则。只要规则确实抓住了数据背后的稳定关系，那么在没见过的新题上也能做对，这就是泛化。
+\noindent $\boldsymbol{x}_i$ 像题目，$y_i$ 像标准答案。训练的目的不是把题目背下来，而是从题目与答案的对应关系中总结出规则。只要规则确实抓住了数据背后的稳定关系，那么在没见过的新题上也能做对，这就是泛化。
 
 \noindent 根据输出空间 $\mathcal{Y}$ 的不同，监督学习最常见的两类任务是回归与分类。回归的输出是连续数值，$\mathcal{Y}\subseteq\mathbb{R}$，例如预测房价或温度。分类的输出是离散类别，$\mathcal{Y}$ 是有限集合，例如判断是否垃圾邮件或识别图像属于哪一类。两者本质一致，都是学习输入到输出的映射，只是输出的形式不同。
 
-\noindent 为了让学习规则变成一个可执行的过程，需要三样东西，模型、损失、优化。模型给出如何从 $x$ 得到预测。损失函数把预测与真实的差异量化为一个数。优化算法通过调整参数让这个数变小。常见的训练目标写成
-$\min_{\theta}\; J(\theta)=\frac{1}{n}\sum_{i=1}^n L\big(y_i,f(x_i;\theta)\big)$,
+\noindent 为了让学习规则变成一个可执行的过程，需要三样东西，模型、损失、优化。模型给出如何从 $\boldsymbol{x}$ 得到预测。损失函数把预测与真实的差异量化为一个数。优化算法通过调整参数让这个数变小。常见的训练目标写成
+$\min_{\theta}\; J(\theta)=\frac{1}{n}\sum_{i=1}^n L\big(y_i,f(\boldsymbol{x}_i;\theta)\big)$,
 也就是让训练集上的平均损失尽量小。为了避免模型只在训练集上表现得像会了，而在新数据上不稳定，通常还会加上正则化项控制模型复杂度：
-$\min_{\theta}\; \frac{1}{n}\sum_{i=1}^n L\big(y_i,f(x_i;\theta)\big)+\lambda\,\Omega(\theta)$.
+$\min_{\theta}\; \frac{1}{n}\sum_{i=1}^n L\big(y_i,f(\boldsymbol{x}_i;\theta)\big)+\lambda\,\Omega(\theta)$.
 可以把它理解为，一方面尽量把题做对，另一方面不要为了做对训练题而把规则弄得过于极端。监督学习的基本流程如图\ref{fig:3-3-2-supervised-learning}所示。
 
 \noindent \begin{figure}[htbp]
@@ -340,12 +340,12 @@ $\min_{\theta}\; \frac{1}{n}\sum_{i=1}^n L\big(y_i,f(x_i;\theta)\big)+\lambda\,\
 \noindent \textbf{1）模型如何给出预测}
 
 \noindent 逻辑回归先给样本一个线性分数：
-$z=w^\top x+b$,
+$z=\boldsymbol{w}^\top \boldsymbol{x}+b$,
 然后把分数通过 Sigmoid 函数变成概率：
-$p=\sigma(z)=\frac{1}{1+e^{-z}}$.
+$p=\sigma(z)=\frac{1}{1+e^{-z}}$。
 这里的 $p$ 可以直接解释为模型认为样本属于正类的概率，即
-$P(y=1\mid x)=p,\qquad P(y=0\mid x)=1-p$.
-$w$ 表示每个特征的重要程度。某个特征的权重为正，说明它越大越支持正类。权重为负则相反。线性部分把这些支持与反对的证据加总成一个分数 $z$，Sigmoid 再把这个分数压缩到 $0$ 到 $1$ 之间，得到可解释为概率的输出。
+$P(y=1\mid \boldsymbol{x})=p,\qquad P(y=0\mid \boldsymbol{x})=1-p$。
+$\boldsymbol{w}$ 表示每个特征的重要程度。某个特征的权重为正，说明它越大越支持正类。权重为负则相反。线性部分把这些支持与反对的证据加总成一个分数 $z$，Sigmoid 再把这个分数压缩到 $0$ 到 $1$ 之间，得到可解释为概率的输出。
 
 \noindent \textbf{2）用什么标准衡量预测好不好}
 
@@ -355,41 +355,41 @@ $L(y,p)= -\big(y\log p+(1-y)\log(1-p)\big)$.
 当 $y=0$ 时，损失是 $-\log(1-p)$，同理会惩罚明明是负类却给了很高正类概率的预测。
 
 \noindent 在训练集上，目标就是让平均损失最小：
-$J(w,b)=\frac{1}{n}\sum_{i=1}^n L(y_i,p_i),\quad p_i=\sigma(w^\top x_i+b)$.
+$J(\boldsymbol{w},b)=\frac{1}{n}\sum_{i=1}^n L(y_i,p_i),\quad p_i=\sigma(\boldsymbol{w}^\top \boldsymbol{x}_i+b)$。
 为了抑制过拟合，常加入 L2 正则化：
-$J_\lambda(w,b)=\frac{1}{n}\sum_{i=1}^n L(y_i,p_i)+\frac{\lambda}{2}\lVert w\rVert_2^2$.
+$J_\lambda(\boldsymbol{w},b)=\frac{1}{n}\sum_{i=1}^n L(y_i,p_i)+\frac{\lambda}{2}\lVert \boldsymbol{w}\rVert_2^2$。
 这相当于鼓励权重不要过大，使模型的规则更平滑，不至于对某些特征的细小波动反应过度。
 
 \noindent \textbf{3）训练一步到底做了什么}
 
-\noindent 逻辑回归的一点优势是，它的参数更新可以写得非常透明。对单个样本 $(x,y)$，令
-$p=\sigma(w^\top x+b)$,
+\noindent 逻辑回归的一点优势是，它的参数更新可以写得非常透明。对单个样本 $(\boldsymbol{x},y)$，令
+$p=\sigma(\boldsymbol{w}^\top \boldsymbol{x}+b)$，
 那么交叉熵损失对参数的梯度是
-$\frac{\partial L}{\partial w}=(p-y)x,\qquad \frac{\partial L}{\partial b}=p-y$.
+$\frac{\partial L}{\partial \boldsymbol{w}}=(p-y)\boldsymbol{x},\qquad \frac{\partial L}{\partial b}=p-y$。
 如果用学习率 $\eta>0$ 做一次随机梯度下降更新，就得到
-$w\leftarrow w-\eta(p-y)x,\qquad b\leftarrow b-\eta(p-y)$.
-这组式子之所以直观，是因为核心只剩下一个量 $p-y$。它就是模型的偏差方向。当真实是 $1$ 但模型给的概率偏低时，$p-y<0$，更新会把 $w^\top x+b$ 往上推，从而让未来对相似样本给出更大的正类概率。当真实是 $0$ 但模型给的概率偏高时，$p-y>0$，更新会把分数往下拉，让正类概率下降。训练的迭代过程，就是不断用这种偏差去修正参数。
+$\boldsymbol{w}\leftarrow \boldsymbol{w}-\eta(p-y)\boldsymbol{x},\qquad b\leftarrow b-\eta(p-y)$。
+这组式子之所以直观，是因为核心只剩下一个量 $p-y$。它就是模型的偏差方向。当真实是 $1$ 但模型给的概率偏低时，$p-y<0$，更新会把 $\boldsymbol{w}^\top \boldsymbol{x}+b$ 往上推，从而让未来对相似样本给出更大的正类概率。当真实是 $0$ 但模型给的概率偏高时，$p-y>0$，更新会把分数往下拉，让正类概率下降。训练的迭代过程，就是不断用这种偏差去修正参数。
 
 \noindent \textbf{4）一个可以手算的计算实例}
 
 \noindent 取一个二维样本
-$x=\begin{pmatrix}1\\2\end{pmatrix},\qquad y=1$.
+$\boldsymbol{x}=\begin{pmatrix}1\\2\end{pmatrix},\qquad y=1$。
 设初始参数
-$w=\begin{pmatrix}0\\0\end{pmatrix},\quad b=0,\quad \eta=0.1$.
+$\boldsymbol{w}=\begin{pmatrix}0\\0\end{pmatrix},\quad b=0,\quad \eta=0.1$。
 先算分数
-$z=w^\top x+b=0$,
+$z=\boldsymbol{w}^\top \boldsymbol{x}+b=0$，
 于是
 $p=\sigma(0)=0.5$.
 这表示模型一开始没有任何偏好，只能给出 $50\%$ 的正类概率。
 
 \noindent 接着计算 $p-y=0.5-1=-0.5$，并更新参数：
-$w\leftarrow 0-0.1(-0.5)\begin{pmatrix}1\\2\end{pmatrix}
+$\boldsymbol{w}\leftarrow \boldsymbol{0}-0.1(-0.5)\begin{pmatrix}1\\2\end{pmatrix}
 =\begin{pmatrix}0.05\\0.10\end{pmatrix},\qquad
 b\leftarrow 0-0.1(-0.5)=0.05$.
-再用更新后的参数对同一个 $x$ 计算一次：
+再用更新后的参数对同一个 $\boldsymbol{x}$ 计算一次：
 $z'=(0.05,0.10)\cdot(1,2)+0.05=0.30$,
 $p'=\sigma(0.30)=\frac{1}{1+e^{-0.30}}\approx 0.574$.
-只更新一步，模型对这个正类样本的预测概率就从 $0.5$ 提升到了约 $0.574$，方向是正确的。把这种更新在大量样本上重复进行，模型会逐渐学到一组权重 $w$ 与偏置 $b$，使得不同特征组合对应的概率输出与标签规律一致，并且在新样本上也能保持稳定表现。
+只更新一步，模型对这个正类样本的预测概率就从 $0.5$ 提升到了约 $0.574$，方向是正确的。把这种更新在大量样本上重复进行，模型会逐渐学到一组权重 $\boldsymbol{w}$ 与偏置 $b$，使得不同特征组合对应的概率输出与标签规律一致，并且在新样本上也能保持稳定表现。
 
 \noindent 这一例子把监督学习的闭环压缩成了可计算的形式。模型给出概率 $p$，标签提供目标 $y$，二者差异 $p-y$ 形成更新信号，更新信号推动参数改变，参数改变又影响下一次预测。理解了这条闭环，监督学习的其他算法，如线性回归、SVM、神经网络等，在结构上都可以看作同一思想的不同实现。
 
@@ -441,8 +441,8 @@ print(f"更新后预测概率: {p_new:.3f}")  # 输出: 0.574
 \noindent \textbf{一\quad 无监督学习要解决什么问题}
 
 \noindent 无监督学习面对的数据通常只有输入，没有对应的标准答案。形式上，给定数据集
-$\mathcal{D}=\{x_i\}_{i=1}^n,\qquad x_i\in\mathbb{R}^d,$
-我们希望从这些样本本身出发，提取数据的结构、规律或表示，而不是学习一个"从 $x$ 到 $y$"的映射函数。监督学习像是"有答案的练习册"，无监督学习更像是"把一堆材料摆在面前，要求你自己归纳出它们的组织方式"。
+$\mathcal{D}=\{\boldsymbol{x}_i\}_{i=1}^n,\qquad \boldsymbol{x}_i\in\mathbb{R}^{d \times 1}$，
+我们希望从这些样本本身出发，提取数据的结构、规律或表示，而不是学习一个"从 $\boldsymbol{x}$ 到 $y$"的映射函数。监督学习像是"有答案的练习册"，无监督学习更像是"把一堆材料摆在面前，要求你自己归纳出它们的组织方式"。
 
 \noindent 无监督学习的目标可以有多种等价表述。常见的一类是发现结构，例如把样本自动分组、识别数据中存在的模式或簇；另一类是学习表示，例如把高维数据压缩到低维但尽量保留关键信息，从而获得更紧凑、更有解释力或更利于下游任务的特征；还有一类是分布建模，即用概率模型刻画数据是如何生成的，从而能够估计密度、识别异常，甚至生成与数据分布一致的新样本。
 
@@ -463,33 +463,33 @@ $\mathcal{D}=\{x_i\}_{i=1}^n,\qquad x_i\in\mathbb{R}^d,$
 
 \noindent \textbf{1）目标函数与变量含义}
 
-\noindent 设我们希望得到 $K$ 个簇，每个簇有一个中心（质心）$\mu_k\in\mathbb{R}^d$，并用指派变量 $r_{ik}\in\{0,1\}$ 表示样本 $x_i$ 是否被分到第 $k$ 个簇，其中约束为
+\noindent 设我们希望得到 $K$ 个簇，每个簇有一个中心（质心）$\boldsymbol{\mu}_k\in\mathbb{R}^{d \times 1}$，并用指派变量 $r_{ik}\in\{0,1\}$ 表示样本 $\boldsymbol{x}_i$ 是否被分到第 $k$ 个簇，其中约束为
 $\sum_{k=1}^K r_{ik}=1,\quad i=1,\dots,n.$
 K-means 的优化目标是最小化簇内平方误差：
-$\min_{\{r_{ik}\},\{\mu_k\}}\; J=\sum_{i=1}^n\sum_{k=1}^K r_{ik}\,\lVert x_i-\mu_k\rVert_2^2.$
+$\min_{\{r_{ik}\},\{\boldsymbol{\mu}_k\}}\; J=\sum_{i=1}^n\sum_{k=1}^K r_{ik}\,\lVert \boldsymbol{x}_i-\boldsymbol{\mu}_k\rVert_2^2.$
 这个目标函数只依赖于数据点与中心点的距离，没有任何标签参与。它表达的偏好很明确：每个点都应该靠近自己所属簇的中心，簇内越紧凑越好。
 
 \noindent \textbf{2）迭代更新规则}
 
 \noindent K-means 用交替优化来求解该问题，重复两步直到收敛。
 
-\noindent 第一步是指派更新。在固定中心 $\{\mu_k\}$ 时，对每个样本选择距离最近的中心：
+\noindent 第一步是指派更新。在固定中心 $\{\boldsymbol{\mu}_k\}$ 时，对每个样本选择距离最近的中心：
 $r_{ik}=
 \begin{cases}
-1,& k=\arg\min_{j\in\{1,\dots,K\}}\lVert x_i-\mu_j\rVert_2^2,\\
+1,& k=\arg\min_{j\in\{1,\dots,K\}}\lVert \boldsymbol{x}_i-\boldsymbol{\mu}_j\rVert_2^2,\\
 0,& \text{otherwise}.
 \end{cases}$
 这一步等价于"把每个点分到最近的簇"。
 
 \noindent 第二步是中心更新。在固定指派 $\{r_{ik}\}$ 时，每个簇的最优中心是该簇内样本的均值：
-$\mu_k=\frac{\sum_{i=1}^n r_{ik}x_i}{\sum_{i=1}^n r_{ik}}.$
+$\boldsymbol{\mu}_k=\frac{\sum_{i=1}^n r_{ik}\boldsymbol{x}_i}{\sum_{i=1}^n r_{ik}}.$
 这一步等价于"把簇中心移动到簇内点的平均位置"。两步交替后，目标函数 $J$ 单调不增，因此会在有限步内收敛到一个局部最优解。
 
 \noindent \textbf{3）一个可手算的计算实例}
 
 \noindent 考虑一维数据（便于手算）：
 $x=\{1,2,4,8\},\qquad K=2.$
-任选初始中心 $\mu_1^{(0)}=1,\ \mu_2^{(0)}=8$。
+任选初始中心 $\boldsymbol{\mu}_1^{(0)}=1,\ \boldsymbol{\mu}_2^{(0)}=8$。
 
 \noindent 第一轮指派：比较每个点到两个中心的距离。
 \begin{itemize}
@@ -503,8 +503,8 @@ $x=\{1,2,4,8\},\qquad K=2.$
 \noindent 于是簇 $1$ 得到 $\{1,2,4\}$，簇 $2$ 得到 $\{8\}$。
 
 \noindent 第一轮中心更新：
-$\mu_1^{(1)}=\frac{1+2+4}{3}=\frac{7}{3}\approx 2.33,\qquad
-\mu_2^{(1)}=\frac{8}{1}=8.$
+$\boldsymbol{\mu}_1^{(1)}=\frac{1+2+4}{3}=\frac{7}{3}\approx 2.33,\qquad
+\boldsymbol{\mu}_2^{(1)}=\frac{8}{1}=8.$
 
 \noindent 第二轮指派：用新中心重新分配。
 \begin{itemize}
