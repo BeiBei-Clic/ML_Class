@@ -21,7 +21,13 @@
 \noindent 这组表达式的意义非常直接。深度网络并不是某一种特定结构，而是一种分层表示的计算框架。每一层把上一层的表示变换成新的表示，早期层通常更贴近原始输入形式，后期层逐步变得更抽象、更贴近任务目标。
 
 \medskip
-\noindent \textbf{【此处添加深度网络分层示意图，展示输入层、隐藏层、输出层的层次结构与信息流动】}
+
+\noindent \begin{figure}[htbp]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/fig-3-4-1-deep-network-architecture.png}
+\caption{\textbf{深度网络分层结构示意图}}
+\label{fig:3-4-1-deep-network-architecture}
+\end{figure}
 
 \noindent 以图像识别为例。假设输入是一张照片，第一层可能识别出简单的边缘和纹理，第二层把边缘组合成形状或纹理模式，第三层把形状组合成局部物体部件，最后一层识别出完整的物体。这个过程就像我们在看一幅画，先看到线条和色块，再看出形状，最后理解画面表达的意思。深度网络所做的就是把这个认知过程用数学方式表达出来。
 
@@ -32,7 +38,13 @@
 \noindent 换句话说，深度学习的关键不在于层数多，而在于用端到端的方式让模型自己形成有用的中间表示。模型不再需要人工告诉它应该关注哪些特征，而是从大量数据中自己学习哪些特征对任务有用。
 
 \medskip
-\noindent \textbf{【此处添加端到端训练与传统两阶段流程对比示意图，左侧为传统"特征工程+模型拟合"两步走，右侧为深度学习端到端训练】}
+
+\noindent \begin{figure}[htbp]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/fig-3-4-2-end-to-end-training.png}
+\caption{\textbf{端到端训练与传统两阶段流程对比示意图}}
+\label{fig:3-4-2-end-to-end-training}
+\end{figure}
 
 \noindent \textbf{四\quad 训练目标的数学形式}
 
@@ -77,7 +89,13 @@
 \noindent 直观上，这相当于把输入逐层重编码。前几层往往形成更局部、更简单的模式，中间层把这些模式组合成更抽象的表示，最后一层把抽象表示映射为任务需要的输出。以识别农作物病害为例，第一层可能识别叶片的颜色和纹理，第二层识别病斑的形状，第三层识别病斑的分布模式，最后一层输出是什么病害以及严重程度。
 
 \medskip
-\noindent \textbf{【此处添加神经网络前向计算示意图，展示从输入层到输出层的逐层变换过程，每层标注线性变换和激活函数】}
+
+\noindent \begin{figure}[htbp]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/fig-3-4-3-forward-propagation.png}
+\caption{\textbf{神经网络前向计算示意图}}
+\label{fig:3-4-3-forward-propagation}
+\end{figure}
 
 \noindent \textbf{三\quad 为何需要非线性激活}
 
@@ -127,7 +145,13 @@
 其中$\odot$表示按元素相乘。
 
 \medskip
-\noindent \textbf{【此处添加反向传播误差信号回传示意图，展示误差如何从输出层逐层回传到输入层】}
+
+\noindent \begin{figure}[htbp]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/fig-3-4-4-backpropagation.png}
+\caption{\textbf{反向传播误差信号回传示意图}}
+\label{fig:3-4-4-backpropagation}
+\end{figure}
 
 \noindent 这个式子表达的含义很朴素。上一层的误差来自下一层误差的回传，再乘上本层激活函数在当前位置的导数，表示本层输出的微小变化会对整体损失产生多大的影响。反向传播之所以高效，是因为它把整网的梯度计算拆成了局部的矩阵运算，并且把中间量缓存下来复用，避免了重复计算。
 
