@@ -227,7 +227,111 @@
 \noindent \textbf{七\quad 小结}
 
 \noindent 本节需要读者牢固掌握的是，卷积层仍然是线性变换的一种，但它通过局部连接与权重共享把参数组织成可在全图复用的局部探测器，从而带来平移等变这一关键性质。理解这一点，后续再学习多通道卷积、步幅与填充、池化、残差结构等内容，就会更容易把握它们各自改变了什么、又保留了什么。
-\subsubsection*{3.4.4\quad 典型网络结构}
-\paragraph{3.4.4.1\quad 卷积神经网络}
-\paragraph{3.4.4.2\quad 循环神经网络}
-\paragraph{3.4.4.3\quad Transformer结构}
+\subsubsection*{3.4.4\quad Transformer 基础}
+
+\medskip
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/fig-transformer-attention}
+\caption{Transformer 的三个核心机制：自注意力、多头注意力和位置编码。}
+\label{fig:transformer-attention}
+\end{figure}
+
+\medskip
+\noindent 图~\ref{fig:transformer-attention}~展示了 Transformer 结构的三个核心机制。左侧部分是自注意力，它让序列中每个位置都能看到其他所有位置的信息，并根据相关性进行加权汇总。中间部分是多头注意力，它并行地使用多组注意力来捕捉不同类型的关系。右侧部分是位置编码，它把位置信息注入到输入表示中。理解这三部分，就掌握了 Transformer 的基础。
+
+\medskip
+\noindent \textbf{一\quad 自注意力：序列位置间的直接交互}
+
+\medskip
+\noindent 图中左侧的自注意力部分展示了 Transformer 与传统网络最本质的区别。在循环网络中，信息需要沿着时间步一步一步传递，前面的信息要等到后面才能用上。在卷积网络中，信息主要在局部邻域内传播，想看到很远的位置需要堆叠很多层。而 Transformer 通过自注意力机制，让序列中任意两个位置都可以在一次计算中直接交互。
+
+\medskip
+\noindent 具体来说，设输入序列长度为 $n$，每个位置的表示维度为 $d$。把输入表示堆叠成矩阵 $X\in\mathbb R^{n\times d}$，其中第 $i$ 行 $x_i^\top$ 表示第 $i$ 个 token 的向量表示。这里的 token 可以是词、子词、帧或 patch 等基本单元。
+
+\medskip
+\noindent 自注意力的核心思想是对序列中每个位置 $i$，模型会根据内容相关性在所有位置 $j$ 上分配权重，然后把这些位置的表示按权重加权求和。你可以把它想象成每个位置都在问，序列中哪些位置对我最重要，我应该向它们借信息。
+
+\medskip
+\noindent 在计算上 Transformer 先把同一个输入 $X$ 线性映射成三组向量，即查询、键、值：
+\[ Q=XW_Q,\qquad K=XW_K,\qquad V=XW_V, \]
+其中 $W_Q,W_K,W_V\in\mathbb R^{d\times d_k}$，因此 $Q,K,V\in\mathbb R^{n\times d_k}$。
+
+\medskip
+\noindent $q_i$ 可以理解为位置 $i$ 想找什么信息的表达，$k_j$ 是位置 $j$ 提供什么信息的标签，$v_j$ 则是位置 $j$ 真正要被汇聚的内容。图中左侧的连接线就是在展示这种查询与键的匹配过程，线越粗表示相关性越强。
+
+\medskip
+\noindent 接着计算注意力权重矩阵。对任意两个位置 $i,j$，它们的相关性由点积 $q_i^\top k_j$ 给出，并做缩放与 softmax 归一化：
+\[ A=\mathrm{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right),\qquad A\in\mathbb R^{n\times n}. \]
+其中 $A_{i,j}$ 表示在更新位置 $i$ 的表示时对位置 $j$ 的关注程度。最后用权重对 $V$ 做加权汇总：
+\[ \mathrm{Attn}(X)=AV,\qquad \mathrm{Attn}(X)\in\mathbb R^{n\times d_k}. \]
+
+\medskip
+\noindent 图中左侧展示的正是这个过程。每个位置都向其他所有位置发出查询，根据点积得到相关性分数，softmax 把这些分数变成归一化的权重，最后用这些权重对所有位置的值进行加权求和。这样每个位置的新表示就包含了整个序列的信息，而信息量的大小由相关性决定。
+
+\medskip
+\noindent \textbf{二\quad 多头注意力：从多个角度捕捉关系}
+
+\medskip
+\noindent 图中中间部分展示了多头注意力的结构。单头注意力在同一个相似度空间里衡量相关，但序列中的相关性往往不止一种。以语言为例，有的词之间语义相近，有的词之间存在语法依赖，有的词在句法结构上紧密相关，还有的词共同构成了某个主题。如果只用一种相似度度量，很难同时捕捉所有这些关系。
+
+\medskip
+\noindent 多头注意力用并行的多组线性映射来表达多种相关性视角。设有 $h$ 个头，第 $t$ 个头计算
+\[ \mathrm{head}_t=\mathrm{Attn}(XW_Q^{(t)},XW_K^{(t)},XW_V^{(t)}), \]
+然后把各头输出拼接并再做一次线性变换：
+\[ \mathrm{MHA}(X)=\mathrm{Concat}(\mathrm{head}_1,\dots,\mathrm{head}_h)\,W_O. \]
+
+\medskip
+\noindent 图中中间的多个并行方块就是在展示这种结构。每个头有自己独立的 $W_Q,W_K,W_V$，因此每个头在不同的表示空间里计算注意力。有的头可能更关注语法关系，有的头可能更关注语义相似，有的头可能更关注长距离依赖。多头注意力让模型能同时从多个角度在全序列范围内查找并汇聚信息，而不是把所有关系压缩到一种相似度度量里。
+
+\medskip
+\noindent \textbf{三\quad 位置编码：注入顺序信息}
+
+\medskip
+\noindent 图中右侧部分展示了位置编码的必要性。注意力机制本身只依赖向量间的点积相似度，它并不关心 token 出现在第几个位置。如果你把输入序列的顺序打乱，注意力计算的结果也会相应打乱，但计算形式本身并不会因为顺序变化而自动感知。
+
+\medskip
+\noindent 这对语言、时间序列等任务是个问题。词序变了，意思往往就变了。时间戳的位置不同，事件的意义也不同。因此 Transformer 需要显式地把位置信息注入到输入表示中。
+
+\medskip
+\noindent 最常见的做法是位置编码。设 $P\in\mathbb R^{n\times d}$ 为位置向量矩阵，将其与输入相加：
+\[ X' = X + P. \]
+这样模型在计算 $Q,K,V$ 时就同时看到了内容信息和位置信息。位置编码可以是固定的函数形式，例如正弦余弦，也可以是可学习参数。图中右侧展示的就是把位置信息叠加到输入表示上的过程。
+
+\medskip
+\noindent \textbf{四\quad Transformer 的完整层结构}
+
+\medskip
+\noindent 前面介绍的三个核心机制需要组织成一个可训练的层。Transformer 的常用基本块由两部分组成，即自注意力子层与前馈网络子层。前馈网络对每个位置独立地做两层线性变换与非线性：
+\[ \mathrm{FFN}(x)=W_2\,\phi(W_1x+b_1)+b_2, \]
+它的作用是对每个位置的表示进行非线性变换与维度扩展或压缩，增强表达能力。自注意力负责在不同位置之间交换信息，前馈网络负责在每个位置内部做更强的非线性加工。两者交替堆叠，就形成了 Transformer 的深层表示学习。
+
+\medskip
+\noindent 在深层网络中稳定训练往往依赖残差连接与归一化。常见写法是：
+\[ H_1 = \mathrm{LN}(X + \mathrm{MHA}(X)), \]
+\[ H_2 = \mathrm{LN}(H_1 + \mathrm{FFN}(H_1)). \]
+
+\medskip
+\noindent 残差连接使信息与梯度能够更顺畅地在深层网络中流动，归一化则缓解数值尺度的漂移，使优化更稳定。你可以把它理解为，注意力与前馈模块负责做变换，残差与归一化负责让变换可堆叠、可训练。
+
+\medskip
+\noindent \textbf{五\quad 一个可手算的注意力示例}
+
+\medskip
+\noindent 为了把自注意力从公式落到可计算的步骤上，下面用一个极简数值示例展示相关性、权重、加权汇总的过程。考虑三个 token 的表示，为便于手算维度取 $2$，并直接给出某一头的 $Q,K,V$：
+\[ q_1=(1,0),\quad q_2=(0,1),\quad q_3=(1,1), \]
+\[ k_1=(1,0),\quad k_2=(0,1),\quad k_3=(1,1), \]
+\[ v_1=(1,0),\quad v_2=(0,1),\quad v_3=(1,1). \]
+
+\medskip
+\noindent 以位置 $3$ 为例，它对三个位置的未归一化相关性即点积为
+\[ q_3^\top k_1=1,\quad q_3^\top k_2=1,\quad q_3^\top k_3=2. \]
+这些分数通过 softmax 变成权重。在这个简单例子中，位置 $3$ 对自身的相关性最大，因此会最关注位置 $3$ 本身，同时也会一定程度关注位置 $1$ 与位置 $2$。最终输出是
+\[ o_3=\sum_{j=1}^3 a_{3j} v_j, \]
+也就是把三处的信息按权重加权融合。这个例子表达的要点是，注意力不是选一个位置，而是对多个位置分配权重并融合，因此它能够在一次计算中把全局依赖直接写入每个位置的表示。
+
+\medskip
+\noindent \textbf{六\quad 小结}
+
+\medskip
+\noindent Transformer 的基础可以归结为图~\ref{fig:transformer-attention}~展示的三个核心机制。自注意力通过 $QK^\top$ 建立位置间的相关性，用 softmax 把相关性变成可解释的权重，再用权重对 $V$ 做加权汇总，从而让序列中任意位置在一次计算中直接交互。多头注意力让这种交互具有多种并行视角，位置编码补上顺序信息，残差连接与归一化使深层堆叠可训练。理解这些机制后，读者再去学习更具体的 Transformer 变体，例如编码器或解码器结构、掩码注意力、交叉注意力、长序列改进等时，会更清楚每一处改动究竟是在改变信息如何流动，以及改变了哪些计算代价与归纳偏置。
